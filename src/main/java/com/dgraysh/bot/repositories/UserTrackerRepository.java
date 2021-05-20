@@ -1,0 +1,35 @@
+package com.dgraysh.bot.repositories;
+
+import lombok.extern.slf4j.Slf4j;
+import net.jodah.expiringmap.ExpiringMap;
+import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+
+@Component
+@Slf4j
+public class UserTrackerRepository {
+    private final Duration expiration = Duration.ofMinutes(30);
+    private final ConcurrentMap<String, String> trackers = ExpiringMap.builder()
+            .expiration(expiration.toMinutes(), TimeUnit.MINUTES)
+            .expirationListener((t, u) -> log.debug("Auth tracker expired: {} -> {}", t, u))
+            .build();
+
+    public void put(String tracker, String userId) {
+        trackers.put(tracker, userId);
+    }
+
+    public Optional<String> find(String tracker) {
+        String userId = trackers.remove(tracker);
+        if (userId != null) {
+            log.debug("User identified: {} -> {}. Auth tracker invalidated.", tracker, userId);
+            return Optional.of(userId);
+        } else {
+            log.debug("Auth tracker is invalid.");
+            return Optional.empty();
+        }
+    }
+}
