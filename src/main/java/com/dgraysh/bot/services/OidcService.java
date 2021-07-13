@@ -22,12 +22,12 @@ public class OidcService {
     private final UserTrackerRepository userTrackers;
     private final TokenRepository accessTokens;
 
-    public Optional<UserInfo> findUserInfo(String userId) {
+    public Optional<UserInfo> findUserInfo(Long userId) {
         return accessTokens.find(userId)
                 .map(UserInfo::getUserInfoFromToken);
     }
 
-    public String getAuthUrl(String userId) {
+    public String getAuthUrl(Long userId) {
         var state = UUID.randomUUID().toString();
         userTrackers.put(state, userId);
         return oAuthService.getAuthorizationUrl(state);
@@ -39,7 +39,7 @@ public class OidcService {
                 .map(UserInfo::getUserInfoFromToken);
     }
 
-    private OpenIdOAuth2AccessToken requestAndStoreToken(String code, String userId) {
+    private OpenIdOAuth2AccessToken requestAndStoreToken(String code, Long userId) {
         var token = requestToken(code);
         accessTokens.put(userId, token);
         return token;

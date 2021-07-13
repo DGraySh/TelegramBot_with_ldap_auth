@@ -6,21 +6,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 public class TelegramUtil {
 
-    /*
-     *
-     * Create template for message
-     *
-     * */
-
     public static SendMessage createMessageTemplate(User user) {
-        return createMessageTemplate(String.valueOf("user.getChatId()")); //todo get chatid from user in DB
+        return createMessageTemplate("user.getChatId()");
     }
-
-    /*
-    *
-    * Create markdown template for message
-    *
-    * */
 
     public static SendMessage createMessageTemplate(String chatId) {
         SendMessage msg = new SendMessage();
@@ -29,14 +17,12 @@ public class TelegramUtil {
         return msg;
     }
 
-    /*
-    *
-    * Create a button
-    * */
     public static InlineKeyboardButton createInlineKeyboardButton(String text, String command) {
         InlineKeyboardButton button = new InlineKeyboardButton();
         button.setText(text);
         button.setCallbackData(command);
         return button;
     }
+
+
 }

@@ -20,24 +20,24 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @RequiredArgsConstructor
 public class TokenRepository {
-    private final ExpiringMap<String, OpenIdOAuth2AccessToken> accessTokens = ExpiringMap.builder()
+    private final Map<Long, String> offlineTokens = new ConcurrentHashMap<>();
+    private final ExpiringMap<Long, OpenIdOAuth2AccessToken> accessTokens = ExpiringMap.builder()
             .variableExpiration()
             .expirationListener((u, t) -> log.debug("Access token expired (user id {})", u))
             .expiringEntryLoader(this::refreshAccessToken)
             .build();
-    private final Map<String, String> offlineTokens = new ConcurrentHashMap<>();
     private final OAuth20Service oAuthService;
 
-    public Optional<OpenIdOAuth2AccessToken> find(String userId) {
+    public Optional<OpenIdOAuth2AccessToken> find(Long userId) {
         return Optional.ofNullable(accessTokens.get(userId));
     }
 
-    public void put(String userId, OpenIdOAuth2AccessToken token) {
+    public void put(Long userId, OpenIdOAuth2AccessToken token) {
         accessTokens.put(userId, token, token.getExpiresIn(), TimeUnit.SECONDS);
         offlineTokens.put(userId, token.getRefreshToken());
     }
 
-    private ExpiringValue<OpenIdOAuth2AccessToken> refreshAccessToken(String userId) {
+    private ExpiringValue<OpenIdOAuth2AccessToken> refreshAccessToken(Long userId) {
         log.debug("Cache miss (user id {}). Refreshing access token.", userId);
         try {
             var offlineToken = offlineTokens.get(userId);

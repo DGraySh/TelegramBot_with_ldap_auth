@@ -13,17 +13,17 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserTrackerRepository {
     private final Duration expiration = Duration.ofMinutes(30);
-    private final ConcurrentMap<String, String> trackers = ExpiringMap.builder()
+    private final ConcurrentMap<String, Long> trackers = ExpiringMap.builder()
             .expiration(expiration.toMinutes(), TimeUnit.MINUTES)
             .expirationListener((t, u) -> log.debug("Auth tracker expired: {} -> {}", t, u))
             .build();
 
-    public void put(String tracker, String userId) {
+    public void put(String tracker, Long userId) {
         trackers.put(tracker, userId);
     }
 
-    public Optional<String> find(String tracker) {
-        String userId = trackers.remove(tracker);
+    public Optional<Long> find(String tracker) {
+        Long userId = trackers.remove(tracker);
         if (userId != null) {
             log.debug("User identified: {} -> {}. Auth tracker invalidated.", tracker, userId);
             return Optional.of(userId);

@@ -9,4 +9,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Role {
     String title;
+
+    public enum Roles {
+        USER("ROLE_bot_user"),
+        ADMIN("ROLE_bot_admin");
+
+        private final String title;
+
+        Roles(String title) {
+            this.title = title;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+    }
 }
