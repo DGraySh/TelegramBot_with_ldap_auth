@@ -1,7 +1,7 @@
 # TelegramBot_with_ldap_auth
 
 My own simple project
-Based on [rubenlagus/TelegramBots](github.com/rubenlagus/TelegramBots/tree/master/telegrambots-spring-boot-starter)  
+Based on [rubenlagus/TelegramBots](https://github.com/rubenlagus/TelegramBots)  
 With [Keycloak](keycloak.org) authentication and role-based access using roles mapping from LDAP  
 <dl>
   <dt>...an idea:
